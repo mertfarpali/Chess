@@ -6,12 +6,29 @@ import SwiftUI
 
 struct ChessBoardView: View {
     @ObservedObject var viewModel: ChessBoardViewModel
+    let onExitToMenu: () -> Void  // Ana menüye dönüş fonksiyonu
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Sıra: \(viewModel.currentTurn == .white ? "Beyaz" : "Siyah")")
-                .font(.headline)
-                .padding()
+            HStack {
+                Text("Sıra: \(viewModel.currentTurn == .white ? "Beyaz" : "Siyah")")
+                    .font(.headline)
+                    .padding(.leading)
+
+                Spacer()
+
+                Button(action: {
+                    onExitToMenu()
+                }) {
+                    Text("Ana Menü")
+                        .font(.subheadline)
+                        .padding(8)
+                        .background(Color.red.opacity(0.2))
+                        .cornerRadius(8)
+                }
+                .padding(.trailing)
+            }
+            .padding(.vertical)
 
             ForEach((0..<8).reversed(), id: \.self) { row in
                 HStack(spacing: 0) {
@@ -29,13 +46,14 @@ struct ChessBoardView: View {
             Button("Yeni Oyun", role: .destructive) {
                 viewModel.resetGame()
             }
-            Button("Tamam", role: .cancel) { }
+            Button("Ana Menüye Dön", role: .cancel) {
+                onExitToMenu()
+            }
         } message: {
             Text("\(viewModel.currentTurn == .white ? "Siyah" : "Beyaz") kazandı!")
         }
     }
 
-    // ♟️ Tek bir kareyi ve içeriğini çizmek için view fonksiyonu
     @ViewBuilder
     func ChessSquareView(pos: Position) -> some View {
         ZStack {

@@ -9,6 +9,7 @@ class ChessBoardViewModel: ObservableObject {
     @Published var currentTurn: PieceColor = .white
     @Published var validMoves: [Position] = []
     @Published var isCheckmate: Bool = false
+    @Published var selectedTheme: PieceTheme = .classic
 
     let mode: GameMode
     let difficulty: BotDifficulty?
@@ -20,13 +21,13 @@ class ChessBoardViewModel: ObservableObject {
         }
     }
 
-    init(mode: GameMode) {
+    init(mode: GameMode, theme: PieceTheme = .classic) {
         self.mode = mode
-        if case let .singlePlayer(diff) = mode {
-            self.difficulty = diff
-        } else {
-            self.difficulty = nil
-        }
+        self.difficulty = {
+            if case let .singlePlayer(diff) = mode { return diff }
+            return nil
+        }()
+        self.selectedTheme = theme
         setupInitialBoard()
     }
 
@@ -173,9 +174,7 @@ class ChessBoardViewModel: ObservableObject {
             }
         }()
 
-        if !pieceCanMove {
-            return false
-        }
+        if !pieceCanMove { return false }
 
         var simulatedBoard = board
         simulatedBoard[to] = simulatedBoard[from]
@@ -230,8 +229,8 @@ class ChessBoardViewModel: ObservableObject {
     func makeBotMove() {
         let depth: Int
         switch difficulty {
-        case .medium:    depth = 1
-        case .hard:      depth = 2
+        case .medium: depth = 1
+        case .hard: depth = 2
         case .legendary: depth = 3
         case .easy, .none: depth = 0
         }
@@ -257,34 +256,13 @@ class ChessBoardViewModel: ObservableObject {
         selectedPosition = nil
         validMoves = []
     }
-    func availableMovesStatic(for from: Position, board: [Position: ChessPiece]) -> [Position] {
-        guard let piece = board[from] else { return [] }
 
-        var moves: [Position] = []
-
-        for row in 0..<8 {
-            for col in 0..<8 {
-                let to = Position(row: row, column: col)
-                if from != to {
-                    let vm = ChessBoardViewModel(mode: self.mode)
-                    vm.board = board
-                    if vm.isValidMove(from: from, to: to) {
-                        moves.append(to)
-                    }
-                }
-            }
-        }
-
-        return moves
-    }
     func evaluateBoard(_ board: [Position: ChessPiece]) -> Int {
-        var total = 0
-        for (_, piece) in board {
-            let value = pieceValue(piece.type)
-            total += piece.color == .black ? value : -value
+        board.reduce(0) {
+            $0 + (pieceValue($1.value.type) * ($1.value.color == .black ? 1 : -1))
         }
-        return total
     }
+
     func minimax(board: [Position: ChessPiece], depth: Int, alpha: Int, beta: Int, maximizing: Bool) -> (score: Int, move: (from: Position, to: Position)?) {
         var alpha = alpha
         var beta = beta
@@ -307,9 +285,7 @@ class ChessBoardViewModel: ObservableObject {
                         if from != to,
                            ChessBoardEvaluator.isValidMove(from: from, to: to, board: board, color: currentColor) {
                             return to
-                        } else {
-                            return nil
-                        }
+                        } else { return nil }
                     }
                 }
 
@@ -324,9 +300,7 @@ class ChessBoardViewModel: ObservableObject {
                         bestMove = (from, to)
                     }
                     alpha = max(alpha, result.score)
-                    if beta <= alpha {
-                        break // ❗ Daha fazla hesaplamaya gerek yok
-                    }
+                    if beta <= alpha { break }
                 }
             }
             return (maxEval, bestMove)
@@ -349,16 +323,10 @@ class ChessBoardViewModel: ObservableObject {
                         bestMove = (from, to)
                     }
                     beta = min(beta, result.score)
-                    if beta <= alpha {
-                        break
-                    }
+                    if beta <= alpha { break }
                 }
             }
             return (minEval, bestMove)
         }
     }
-
 }
-
-
-

@@ -67,7 +67,7 @@ struct ChessBoardView: View {
             }
 
             if let piece = viewModel.board[pos] {
-                Text(pieceSymbol(for: piece))
+                Text(viewModel.selectedTheme.symbol(for: piece))
                     .font(.system(size: 32))
             }
 
@@ -79,23 +79,6 @@ struct ChessBoardView: View {
         .frame(width: 44, height: 44)
         .onTapGesture {
             viewModel.handleTap(on: pos)
-        }
-    }
-
-    func pieceSymbol(for piece: ChessPiece) -> String {
-        switch (piece.type, piece.color) {
-        case (.king, .white): return "♔"
-        case (.queen, .white): return "♕"
-        case (.rook, .white): return "♖"
-        case (.bishop, .white): return "♗"
-        case (.knight, .white): return "♘"
-        case (.pawn, .white): return "♙"
-        case (.king, .black): return "♚"
-        case (.queen, .black): return "♛"
-        case (.rook, .black): return "♜"
-        case (.bishop, .black): return "♝"
-        case (.knight, .black): return "♞"
-        case (.pawn, .black): return "♟︎"
         }
     }
 }

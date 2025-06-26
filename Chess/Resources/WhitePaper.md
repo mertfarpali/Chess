@@ -1,50 +1,107 @@
-# 2D Satranç Oyunu - Whitepaper
+# ♟️ ChessApp - Satranç Oyunu (iOS)
 
-## 1. Proje Özeti
+SwiftUI ile geliştirilen bu satranç uygulaması; tek oyunculu (bot’a karşı), iki oyunculu ve öğretici modlarıyla tam özellikli bir deneyim sunar. Kullanıcılar satranç taşlarının hareketlerini öğrenebilir, farklı zorluk seviyelerinde botlara karşı oynayabilir ve ana menüden tüm bu modlara kolayca erişebilir.
 
-SwiftUI kullanarak geliştirilecek olan bu 2D satranç oyunu, klasik satranç kurallarına uygun, interaktif ve modüler bir yapıda olacak. Oyun, kullanıcıya karşı oyun (PvE) ve ileride geliştirilecek yapay zekâ entegrasyonuna uygun mimariyle hazırlanacaktır.
+---
 
-## 2. Amaç ve Hedefler
+## 📱 Özellikler
 
-* Satranç mantığının tam ve doğru bir şekilde uygulanması
-* Şık ve sade bir SwiftUI arayüzü
-* Genişletilebilir bir oyun motoru (gelecekte 3D veya online oynanabilirlik için altyapı)
+- ✅ Tek oyunculu mod (Bot’a karşı)
+- ✅ Farklı bot zorlukları: Kolay, Orta, Zor, Efsanevi
+- ✅ İki oyunculu mod (aynı cihazda)
+- ✅ Öğretici mod (taşları tanı ve deneme yap)
+- ✅ Gerçekçi UI ve taş ikonları
+- ✅ Ana menüye dönüş ve geçiş kontrolü
+- ✅ Minimax algoritması ile akıllı bot davranışı
 
-## 3. Temel Özellikler
+---
 
-* 8x8 satranç tahtası
-* Taş türleri ve renkleri
-* Geçerli hamle kontrolü
-* Şah ve Şah mat algılaması
-* Oyuncu sırası kontrolü
-* Hamle geçmişi
+## 📁 Proje Yapısı
 
-## 4. Teknik Mimari
+### `Models/`
 
-* **Model**: Taş tipi (`enum ChessPiece`), konum (`struct Position`), tahta (`class ChessBoard`)
-* **View**: SwiftUI tabanlı grid yapısı, draggable taşlar
-* **ViewModel**: Hamle kontrol mantığı, oyunun durumu, şah-mat tespiti
+| Dosya                | Açıklama |
+|---------------------|----------|
+| `ChessPiece.swift`  | Satranç taşının tipi ve rengi (`PieceType`, `PieceColor`) |
+| `Position.swift`    | Tahtadaki bir pozisyonu temsil eder (`row`, `column`) |
+| `GameMode.swift`    | Oyun modlarını (`singlePlayer`, `twoPlayers`) tanımlar |
+| `BotDifficulty.swift` | Bot’un zorluk seviyeleri (`easy`, `medium`, `hard`, `legendary`) |
 
-## 5. Kullanılan Teknolojiler
+---
 
-* Swift 5.10+
-* SwiftUI (iOS 17)
-* Xcode 15+
-* MVVM mimarisi
+### `ViewModels/`
 
-## 6. Yol Haritası
+| Dosya                      | Açıklama |
+|---------------------------|----------|
+| `ChessBoardViewModel.swift` | Oyun mantığı, geçerli hamle kontrolü, taş hareketi, bot hamlesi ve oyun durumu kontrolü yapılır. |
 
-1. Taş ve tahta modellemesi
-2. SwiftUI arayüzü ve grid yapısı
-3. Hamle kontrol ve kurallar
-4. Şah/şah mat algısı
-5. Hamle geçmişi ve sıra takibi
-6. Gelişmiş UX: animasyonlar, vurgular
-7. Yapay zekâ için altyapı planlaması
+---
 
-## 7. Gelecek Geliştirmeler (Opsiyonel)
+### `Views/`
 
-* 3D geörüntüleme (SceneKit)
-* Online multiplayer (Game Center)
-* Yapay zekâ rakip (minimax, MCTS)
-* Temalar ve skin desteği
+| Dosya                       | Açıklama |
+|----------------------------|----------|
+| `ContentView.swift`        | Ana menü arayüzü. Oyun modları ve sayfa geçişleri. |
+| `DifficultyPickerView.swift` | Tek oyunculu modda zorluk seviyesi seçimi (sheet). |
+| `ChessBoardView.swift`     | Satranç tahtasının çizimi, kullanıcı etkileşimi ve oyun arayüzü. |
+| `TutorialView.swift`       | Eğitim ekranı: her taş için bilgi ve örnek. |
+| `TutorialBoardView.swift`  | Eğitim tahtası: kullanıcı taş hamlesini deneyerek öğrenir. |
+| `TutorialTileView.swift`   | Her taşın açıklamasını içeren bilgi kutusu. |
+
+---
+
+### `Assets/`
+
+- Satranç ikonları, taş sembolleri, renk temaları, app ikonları vb.
+
+---
+
+## 🤖 Bot Zorluk Seviyeleri
+
+| Seviye     | Strateji Açıklaması |
+|------------|---------------------|
+| `easy`     | Rastgele hamle |
+| `medium`   | En değerli taşı alma odaklı |
+| `hard`     | 1 seviye derinlikli `minimax` |
+| `legendary`| 2 seviye derinlikli `minimax` + taş değeri değerlendirmesi |
+
+---
+
+## 🎓 Öğretici Mod
+
+Taş tanıtımı ve hamle denemesi:
+
+1. **Teorik açıklama** (`TutorialTileView`)
+2. **Uygulamalı deneme** (`TutorialBoardView`)
+   - Geçerli tüm hedef karelerde doğru hamle vurgulanır.
+   - Doğru/yanlış geri bildirimi ekranda gösterilir.
+
+---
+
+## 🧠 İleri Geliştirme Fikirleri
+
+- Zamanlı mod (Blitz, Rapid)
+- Online eşli oyun (multiplayer)
+- Taş temaları (modern, klasik vs.)
+- Geri alma / ileri alma özelliği
+- Oyun kaydetme / yükleme
+- iCloud ile eşzamanlama
+
+---
+
+## 🚀 Başlangıç
+
+1. Xcode ile projeyi aç
+2. `ChessApp.swift` içinden uygulamayı başlat
+3. `Simulator` veya gerçek cihazda test et
+
+---
+
+## 👤 Author
+
+**Mert Fırat Arpalı**
+
+- 🧑‍💻 GitHub: [@mertfarpali](https://github.com/mertfarpali)
+- 🎮 Proje: [Runner - Endless Runner Game](https://github.com/mertfarpali/Runner)
+
+---
